@@ -52,6 +52,7 @@ import org.spongepowered.common.registry.SpongeGameRegistry;
 import org.spongepowered.common.config.SpongeConfigManager;
 import org.spongepowered.common.data.SpongeDataManager;
 import org.spongepowered.common.scheduler.SpongeScheduler;
+import org.spongepowered.common.world.FakePlayer;
 
 import javax.inject.Singleton;
 
@@ -172,6 +173,10 @@ public abstract class SpongeGame implements Game {
 
     public void setState(GameState state) {
         this.state = checkNotNull(state);
+    }
+
+    public FakePlayer.Factory createFakePlayerFactory() {
+        return new FakePlayer.Factory();
     }
 
 }

@@ -53,6 +53,7 @@ import org.spongepowered.common.event.CauseTracker;
 import org.spongepowered.common.event.SpongeCommonEventFactory;
 import org.spongepowered.common.interfaces.entity.IMixinEntity;
 import org.spongepowered.common.interfaces.world.IMixinWorld;
+import org.spongepowered.common.world.FakePlayer;
 
 import javax.annotation.Nullable;
 
@@ -118,7 +119,7 @@ public final class SpongeImplHooks {
     }
 
     public static boolean isFakePlayer(Entity entity) {
-        return false;
+        return entity instanceof FakePlayer;
     }
 
     public static boolean onDroppedByPlayer(Item item, ItemStack stack, EntityPlayer player) {
@@ -157,7 +158,7 @@ public final class SpongeImplHooks {
             if (event.isCancelled()) {
                 return null;
             }
-    
+
             EntityItem eventItem = (EntityItem) event.getEntities().get(0);
             spongeWorld.getCauseTracker().setIgnoreSpawnEvents(true);
             player.worldObj.spawnEntityInWorld(eventItem);
