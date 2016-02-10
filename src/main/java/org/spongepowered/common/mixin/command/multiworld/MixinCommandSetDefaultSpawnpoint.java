@@ -22,17 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.interfaces.world;
+package org.spongepowered.common.mixin.command.multiworld;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.border.WorldBorder;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.server.CommandSetDefaultSpawnpoint;
+import net.minecraft.network.Packet;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerList;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.common.interfaces.world.IMixinWorldServer;
 
-public interface IMixinWorldProvider {
+@Mixin(CommandSetDefaultSpawnpoint.class)
+public abstract class MixinCommandSetDefaultSpawnpoint {
 
-    WorldBorder createServerWorldBorder();
-
-    void setGeneratorSettings(String generatorSettings);
-
-    int getRespawnDimension(EntityPlayerMP playerMP);
+    // Set new spawn point packet only to players in the affected dimensions
+    @Redirect(method = "execute", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/server/management/PlayerList;sendPacketToAllPlayers(Lnet/minecraft/network/Packet;)V"))
+    private void onSendSpawnPointPacket(PlayerList playerList, Packet packet, MinecraftServer server, ICommandSender sender, String[] args) {
+        playerList.sendPacketToAllPlayersInDimension(packet, ((IMixinWorldServer) sender.getEntityWorld()).getDimensionId());
+    }
 
 }

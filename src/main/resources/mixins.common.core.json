@@ -160,7 +160,6 @@
         "command.MixinCommandHandler",
         "command.MixinCommandScoreboard",
         "command.MixinCommandSource",
-        "command.MixinCommandWorldBorder",
         "command.MixinICommandSender",
         "command.MixinLocatedSource",
         "command.MixinMinecartCommandBlockSender",
