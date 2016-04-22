@@ -90,6 +90,7 @@ import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.ChangeGameModeEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.PlayerChangeClientSettingsEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
+import org.spongepowered.api.gui.window.Window;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.type.CarriedInventory;
@@ -127,6 +128,7 @@ import org.spongepowered.common.entity.player.PlayerKickHelper;
 import org.spongepowered.common.entity.player.tab.SpongeTabList;
 import org.spongepowered.common.event.CauseTracker;
 import org.spongepowered.common.event.SpongeCommonEventFactory;
+import org.spongepowered.common.gui.window.AbstractSpongeWindow;
 import org.spongepowered.common.interfaces.IMixinCommandSender;
 import org.spongepowered.common.interfaces.IMixinCommandSource;
 import org.spongepowered.common.interfaces.IMixinPacketResourcePackSend;
@@ -181,6 +183,7 @@ public abstract class MixinEntityPlayerMP extends MixinEntityPlayer implements P
     @Shadow private float lastHealth;
     @Shadow private int lastFoodLevel;
     @Shadow public boolean isChangingQuantityOnly;
+    @Shadow private int currentWindowId;
 
     @Shadow public abstract void setSpectatingEntity(Entity entityToSpectate);
     @Shadow public abstract void sendPlayerAbilities();
@@ -188,6 +191,7 @@ public abstract class MixinEntityPlayerMP extends MixinEntityPlayer implements P
     @Shadow public abstract void func_175145_a(StatBase p_175145_1_);
     @Shadow public abstract StatisticsFile getStatFile();
     @Shadow public abstract void updateHeldItem();
+    @Shadow protected abstract void getNextWindowId();
 
     private Set<SkinPart> skinParts = Sets.newHashSet();
     private int viewDistance;
@@ -787,4 +791,47 @@ public abstract class MixinEntityPlayerMP extends MixinEntityPlayer implements P
         // force client itemstack update if place event was cancelled
         this.playerNetServerHandler.sendPacket(new S2FPacketSetSlot(this.openContainer.windowId, slot.slotNumber, this.packetItem));
     }
+
+    private AbstractSpongeWindow openWindow;
+
+    @Override
+    public boolean showWindow(Window window) {
+        checkNotNull(window, "window");
+        if (this.openWindow != null && this.openWindow.canDetectClientClose()) {
+            return false; // A GUI is open and we know it's closable
+        }
+        if (window instanceof AbstractSpongeWindow) {
+            if (((AbstractSpongeWindow) window).bindAndShow((EntityPlayerMP) (Object) this)) {
+                this.openWindow = (AbstractSpongeWindow) window;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Optional<Window> getActiveWindow() {
+        return Optional.ofNullable(this.openWindow);
+    }
+
+    @Override
+    public boolean closeActiveWindow() {
+        if (this.openWindow == null || this.openWindow.unbindAndClose()) {
+            this.openWindow = null;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void informGuiClosed() {
+        this.openWindow = null;
+    }
+
+    @Override
+    public int incrementWindowId() {
+        getNextWindowId();
+        return this.currentWindowId;
+    }
+
 }

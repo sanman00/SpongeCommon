@@ -120,6 +120,7 @@ import org.spongepowered.common.event.entity.teleport.SpongeTeleportCauseBuilder
 import org.spongepowered.common.event.spawn.*;
 import org.spongepowered.common.extra.fluid.SpongeFluidStackBuilder;
 import org.spongepowered.common.extra.fluid.SpongeFluidStackSnapshotBuilder;
+import org.spongepowered.common.gui.window.SpongeWindowBuilder;
 import org.spongepowered.common.item.SpongeFireworkEffectBuilder;
 import org.spongepowered.common.item.inventory.SpongeItemStackBuilder;
 import org.spongepowered.common.item.inventory.generation.SpongeItemStackGenerator;
@@ -269,6 +270,7 @@ public final class CommonModuleRegistry {
             .registerBuilderSupplier(EntityTeleportCause.Builder.class, SpongeEntityTeleportCauseBuilder::new)
             .registerBuilderSupplier(PortalTeleportCause.Builder.class, SpongePortalTeleportCauseBuilder::new)
         ;
+        SpongeWindowBuilder.registerBuilders(registry);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

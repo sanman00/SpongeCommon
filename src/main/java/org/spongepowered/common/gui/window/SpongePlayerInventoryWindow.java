@@ -22,48 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.interfaces.entity.player;
+package org.spongepowered.common.gui.window;
 
-import com.flowpowered.math.vector.Vector3d;
-import net.minecraft.item.ItemStack;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.gui.window.PlayerInventoryWindow;
+import org.spongepowered.api.item.inventory.Container;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
-public interface IMixinEntityPlayerMP {
+public class SpongePlayerInventoryWindow extends AbstractSpongeWindow implements PlayerInventoryWindow {
 
-    void reset();
+    @Override
+    public Optional<Container> getContainer() {
+        return Optional.of((Container) this.player.inventoryContainer);
+    }
 
-    default boolean usesCustomClient() {
+    @Override
+    protected boolean show() {
+        // TODO Auto-generated method stub
         return false;
     }
 
-    User getUserObject();
+    public static class Builder extends SpongeWindowBuilder<PlayerInventoryWindow, PlayerInventoryWindow.Builder>
+            implements PlayerInventoryWindow.Builder {
 
-    void setVelocityOverride(@Nullable Vector3d velocity);
-
-    MessageChannel getDeathMessageChannel();
-
-    ItemStack getPacketItem();
-
-    ItemStackSnapshot getPacketCursor();
-
-    void setPacketItem(ItemStack itemstack);
-
-    void setPacketCursor(ItemStackSnapshot cursor);
-
-    void restorePacketItem();
-
-    void initScoreboard();
-
-    void resetAttributeMap();
-
-    void refreshXpHealthAndFood();
-
-    void informGuiClosed();
-
-    int incrementWindowId();
+        @Override
+        public PlayerInventoryWindow build() {
+            return new SpongePlayerInventoryWindow();
+        }
+    }
 
 }
