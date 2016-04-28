@@ -62,8 +62,8 @@ public interface IMixinEntityPlayerMP {
 
     void refreshXpHealthAndFood();
 
-    void informGuiClosed();
+    void informWindowClosed();
 
-    int incrementWindowId();
+    int incrementAndGetWindowId();
 
 }
