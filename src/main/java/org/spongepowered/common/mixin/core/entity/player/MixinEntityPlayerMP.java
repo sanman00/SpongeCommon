@@ -128,7 +128,6 @@ import org.spongepowered.common.entity.player.PlayerKickHelper;
 import org.spongepowered.common.entity.player.tab.SpongeTabList;
 import org.spongepowered.common.event.CauseTracker;
 import org.spongepowered.common.event.SpongeCommonEventFactory;
-import org.spongepowered.common.gui.window.AbstractSpongeWindow;
 import org.spongepowered.common.interfaces.IMixinCommandSender;
 import org.spongepowered.common.interfaces.IMixinCommandSource;
 import org.spongepowered.common.interfaces.IMixinPacketResourcePackSend;
@@ -193,7 +192,7 @@ public abstract class MixinEntityPlayerMP extends MixinEntityPlayer implements P
     @Shadow public abstract void updateHeldItem();
     @Shadow protected abstract void getNextWindowId();
 
-    private AbstractSpongeWindow openWindow;
+    private Window openWindow;
 
     private Set<SkinPart> skinParts = Sets.newHashSet();
     private int viewDistance;
@@ -795,37 +794,13 @@ public abstract class MixinEntityPlayerMP extends MixinEntityPlayer implements P
     }
 
     @Override
-    public boolean showWindow(Window window) {
-        checkNotNull(window, "window");
-        if (this.openWindow != null && this.openWindow.canDetectClientClose()) {
-            return false; // A GUI is open and we know it's closable
-        }
-        if (window instanceof AbstractSpongeWindow) {
-            if (((AbstractSpongeWindow) window).bindAndShow((EntityPlayerMP) (Object) this)) {
-                this.openWindow = (AbstractSpongeWindow) window;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public Optional<Window> getActiveWindow() {
         return Optional.ofNullable(this.openWindow);
     }
 
     @Override
-    public boolean closeActiveWindow() {
-        if (this.openWindow == null || this.openWindow.unbindAndClose()) {
-            this.openWindow = null;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void informWindowClosed() {
-        this.openWindow = null;
+    public void setWindow(Window window) {
+        this.openWindow = window;
     }
 
     @Override

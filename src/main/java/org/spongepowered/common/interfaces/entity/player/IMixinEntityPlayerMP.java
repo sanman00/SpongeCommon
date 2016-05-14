@@ -27,6 +27,7 @@ package org.spongepowered.common.interfaces.entity.player;
 import com.flowpowered.math.vector.Vector3d;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.gui.window.Window;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.text.channel.MessageChannel;
 
@@ -62,7 +63,7 @@ public interface IMixinEntityPlayerMP {
 
     void refreshXpHealthAndFood();
 
-    void informWindowClosed();
+    void setWindow(Window window);
 
     int incrementAndGetWindowId();
 
