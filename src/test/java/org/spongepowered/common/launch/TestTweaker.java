@@ -41,7 +41,12 @@ public class TestTweaker implements ITweaker {
     }
 
     @Override
-    public void injectIntoClassLoader(LaunchClassLoader classLoader) {
+    public void injectIntoClassLoader(LaunchClassLoader loader) {
+        // JUnit attempts to lookup the @Test annotation so we need to make sure the classes are loaded
+        // using the same class loader (the main class loader)
+        loader.addClassLoaderExclusion("org.junit.");
+        loader.addClassLoaderExclusion("org.hamcrest.");
+
         SpongeLaunch.setupMixinEnvironment();
         MixinEnvironment.getDefaultEnvironment().setSide(SERVER);
     }

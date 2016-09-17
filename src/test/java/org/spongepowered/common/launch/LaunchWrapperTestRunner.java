@@ -42,11 +42,6 @@ public class LaunchWrapperTestRunner extends BlockJUnit4ClassRunner {
             Launch.main(new String[]{"--tweakClass", "org.spongepowered.common.launch.TestTweaker"});
         }
 
-        // JUnit attempts to lookup the @Test annotation so we need to make sure the classes are loaded
-        // using the same class loader (the main class loader)
-        Launch.classLoader.addClassLoaderExclusion("org.junit.");
-        Launch.classLoader.addClassLoaderExclusion("org.hamcrest.");
-
         try {
             return Class.forName(originalClass.getName(), true, Launch.classLoader);
         } catch (ClassNotFoundException e) {
