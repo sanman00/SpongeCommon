@@ -26,11 +26,14 @@ package org.spongepowered.common.launch;
 
 import static org.spongepowered.asm.mixin.MixinEnvironment.Side.SERVER;
 
+import com.google.common.io.Resources;
 import net.minecraft.launchwrapper.ITweaker;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 public class TestTweaker implements ITweaker {
@@ -42,6 +45,10 @@ public class TestTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader loader) {
+        // Register access transformer
+        Launch.blackboard.put("at", new URL[]{Resources.getResource("META-INF/common_at.cfg")});
+        loader.registerTransformer("org.spongepowered.common.launch.transformer.AccessTransformer");
+
         // JUnit attempts to lookup the @Test annotation so we need to make sure the classes are loaded
         // using the same class loader (the main class loader)
         loader.addClassLoaderExclusion("org.junit.");

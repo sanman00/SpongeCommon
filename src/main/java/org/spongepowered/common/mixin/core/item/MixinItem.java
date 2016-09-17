@@ -52,6 +52,12 @@ import java.util.Optional;
 @Mixin(Item.class)
 public abstract class MixinItem implements ItemType, IMixinItem, SpongeGameDictionaryEntry {
 
+    // TODO: This must be either moved to the test package or disabled in SpongeForge
+    @Inject(method = "registerItem(ILnet/minecraft/util/ResourceLocation;Lnet/minecraft/item/Item;)V", at = @At("RETURN"))
+    private static void registerMinecraftItem(int id, ResourceLocation name, Item item, CallbackInfo ci) {
+        ItemTypeRegistryModule.getInstance().registerAdditionalCatalog((ItemType) item);
+    }
+
     public Optional<BlockType> blockType = Optional.empty();
 
     @Shadow
