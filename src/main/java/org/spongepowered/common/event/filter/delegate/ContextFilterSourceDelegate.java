@@ -33,29 +33,33 @@ import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.IFEQ;
 import static org.objectweb.asm.Opcodes.IFNE;
 import static org.objectweb.asm.Opcodes.INSTANCEOF;
+import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.filter.cause.Named;
+import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.event.filter.cause.ContextValue;
 
 import java.lang.reflect.Parameter;
 
-public class NamedCauseFilterSourceDelegate extends CauseFilterSourceDelegate {
+public class ContextFilterSourceDelegate extends CauseFilterSourceDelegate {
 
-    private final Named anno;
+    private final ContextValue anno;
 
-    public NamedCauseFilterSourceDelegate(Named anno) {
+    public ContextFilterSourceDelegate(ContextValue anno) {
         this.anno = anno;
     }
 
     @Override
     protected void insertCauseCall(MethodVisitor mv, Parameter param, Class<?> targetType) {
+        mv.visitMethodInsn(INVOKEINTERFACE, Type.getInternalName(Cause.class), "getContext",
+                "()" + Type.getDescriptor(EventContext.class), true);
         mv.visitLdcInsn(this.anno.value());
         mv.visitLdcInsn(Type.getType(targetType));
-        mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(Cause.class), "get", "(Ljava/lang/String;Ljava/lang/Class;)Ljava/util/Optional;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(EventContext.class), "get", "(Ljava/lang/String;Ljava/lang/Class;)Ljava/util/Optional;", false);
     }
 
     @Override

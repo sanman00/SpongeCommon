@@ -37,7 +37,6 @@ import org.spongepowered.api.data.manipulator.ImmutableDataManipulator;
 import org.spongepowered.api.data.manipulator.immutable.block.ImmutableDirectionalData;
 import org.spongepowered.api.data.manipulator.immutable.block.ImmutableExtendedData;
 import org.spongepowered.api.data.value.BaseValue;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -50,9 +49,9 @@ import org.spongepowered.common.data.manipulator.immutable.block.ImmutableSponge
 import org.spongepowered.common.data.util.DirectionResolver;
 import org.spongepowered.common.event.InternalNamedCauses;
 import org.spongepowered.common.event.tracking.CauseTracker;
+import org.spongepowered.common.event.tracking.MutableWrapper;
 import org.spongepowered.common.event.tracking.PhaseContext;
 import org.spongepowered.common.event.tracking.phase.block.BlockPhase;
-import org.spongepowered.common.event.tracking.MutableWrapper;
 import org.spongepowered.common.interfaces.IMixinChunk;
 import org.spongepowered.common.interfaces.world.IMixinWorldServer;
 
@@ -82,10 +81,10 @@ public abstract class MixinBlockPistonBase extends MixinBlock {
             final SpongeBlockSnapshot snapshot = ((IMixinWorldServer) worldIn).createSpongeBlockSnapshot(currentState, currentState, pos, 0);
             final IMixinChunk mixinChunk = (IMixinChunk) worldIn.getChunkFromBlockCoords(pos);
             final PhaseContext phaseContext = PhaseContext.start()
-                    .add(NamedCause.source(snapshot))
-                    .add(NamedCause.of(InternalNamedCauses.Piston.POSITION, pos))
-                    .add(NamedCause.of(InternalNamedCauses.Piston.DIRECTION, direction))
-                    .add(NamedCause.of(InternalNamedCauses.Piston.DUMMY_CALLBACK, new MutableWrapper<CallbackInfoReturnable<Boolean>>(null)))
+                    .add(snapshot)
+                    .context(InternalNamedCauses.Piston.POSITION, pos)
+                    .context(InternalNamedCauses.Piston.DIRECTION, direction)
+                    .context(InternalNamedCauses.Piston.DUMMY_CALLBACK, new MutableWrapper<CallbackInfoReturnable<Boolean>>(null))
                     .addCaptures();
             mixinChunk.getBlockNotifier(pos).ifPresent(phaseContext::notifier);
             mixinChunk.getBlockOwner(pos).ifPresent(phaseContext::owner);
@@ -101,7 +100,7 @@ public abstract class MixinBlockPistonBase extends MixinBlock {
         if (!worldIn.isRemote && CauseTracker.ENABLED) {
             final CauseTracker causeTracker = ((IMixinWorldServer) worldIn).getCauseTracker();
             final PhaseContext context = causeTracker.getCurrentContext();
-            context.firstNamed(InternalNamedCauses.Piston.DUMMY_CALLBACK, MutableWrapper.class)
+            context.named(InternalNamedCauses.Piston.DUMMY_CALLBACK, MutableWrapper.class)
                     .ifPresent(wrapper -> ((MutableWrapper<CallbackInfoReturnable<Boolean>>) wrapper).setObj(ci));
             causeTracker.completePhase();
         }

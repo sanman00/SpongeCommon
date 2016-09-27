@@ -36,7 +36,7 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.Location;
@@ -113,8 +113,8 @@ class BlockEventTickPhaseState extends TickPhaseState {
                 .ifPresentAndNotEmpty(blockSnapshots -> TrackingUtil.processBlockCaptures(blockSnapshots, causeTracker, this, phaseContext));
         phaseContext.getCapturedEntitySupplier()
                 .ifPresentAndNotEmpty(entities -> {
-                    final Cause cause = Cause.source(InternalSpawnTypes.SpawnCauses.CUSTOM_SPAWN)
-                            .build();
+                    final Cause cause = Cause.builder().append(InternalSpawnTypes.SpawnCauses.CUSTOM_SPAWN)
+                            .build(EventContext.empty());
                     final SpawnEntityEvent
                             spawnEntityEvent =
                             SpongeEventFactory.createSpawnEntityEvent(cause, entities, causeTracker.getWorld());
@@ -128,8 +128,8 @@ class BlockEventTickPhaseState extends TickPhaseState {
                 });
         phaseContext.getCapturedItemsSupplier()
                 .ifPresentAndNotEmpty(items -> {
-                    final Cause cause = Cause.source(InternalSpawnTypes.SpawnCauses.CUSTOM_SPAWN)
-                            .build();
+                    final Cause cause = Cause.builder().append(InternalSpawnTypes.SpawnCauses.CUSTOM_SPAWN)
+                            .build(EventContext.empty());
                     final ArrayList<Entity> capturedEntities = new ArrayList<>();
                     for (EntityItem entity : items) {
                         capturedEntities.add(EntityUtil.fromNative(entity));
@@ -148,13 +148,13 @@ class BlockEventTickPhaseState extends TickPhaseState {
     }
 
     @Override
-    public void associateAdditionalBlockChangeCauses(PhaseContext context, Cause.Builder builder, CauseTracker causeTracker) {
+    public void associateAdditionalBlockChangeCauses(PhaseContext context, Cause.Builder builder, EventContext.Builder ctxBuilder, CauseTracker causeTracker) {
         final Optional<BlockSnapshot> blockSnapshot = context.getSource(BlockSnapshot.class);
         final Optional<TileEntity> tileEntity = context.getSource(TileEntity.class);
         if (blockSnapshot.isPresent()) {
-            builder.named(NamedCause.notifier(blockSnapshot.get()));
+            ctxBuilder.add(EventContext.NOTIFIER, blockSnapshot.get());
         } else if (tileEntity.isPresent()) {
-            builder.named(NamedCause.notifier(tileEntity.get()));
+            ctxBuilder.add(EventContext.NOTIFIER, tileEntity.get());
         }
 
     }

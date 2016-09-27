@@ -27,7 +27,7 @@ package org.spongepowered.common.mixin.core.world;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldType;
-import org.spongepowered.api.service.context.Context;
+import org.spongepowered.api.service.context.ServiceContext;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Dimension;
 import org.spongepowered.api.world.DimensionType;
@@ -86,7 +86,7 @@ public abstract class MixinWorldProvider implements Dimension, IMixinWorldProvid
     }
 
     @Override
-    public Context getContext() {
+    public ServiceContext getContext() {
         return ((IMixinDimensionType) (Object) getDimensionType()).getContext();
     }
 }

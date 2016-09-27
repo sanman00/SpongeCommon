@@ -26,8 +26,8 @@ package org.spongepowered.common.event.listener;
 
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.filter.cause.Named;
+import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.event.filter.cause.ContextValue;
 import org.spongepowered.common.event.EventFilterTest;
 
 public class NamedCauseListener {
@@ -37,17 +37,19 @@ public class NamedCauseListener {
     public boolean namedCauseListenerCalledEx;
 
     @Listener
-    public void namedCauseListener(EventFilterTest.SubEvent event, @Named(NamedCause.OWNER) BlockState state) {
+    public void namedCauseListener(EventFilterTest.SubEvent event, @ContextValue(EventContext.OWNER) BlockState state) {
         this.namedCauseListenerCalled = true;
     }
 
     @Listener
-    public void namedCauseListenerInclude(EventFilterTest.SubEvent event, @Named(value = NamedCause.OWNER, typeFilter=BlockState.class) Object state) {
+    public void namedCauseListenerInclude(EventFilterTest.SubEvent event,
+            @ContextValue(value = EventContext.OWNER, typeFilter = BlockState.class) Object state) {
         this.namedCauseListenerCalledInc = true;
     }
 
     @Listener
-    public void namedCauseListenerExclude(EventFilterTest.SubEvent event, @Named(value = NamedCause.OWNER, typeFilter=BlockState.class, inverse = true) Object state) {
+    public void namedCauseListenerExclude(EventFilterTest.SubEvent event,
+            @ContextValue(value = EventContext.OWNER, typeFilter = BlockState.class, inverse = true) Object state) {
         this.namedCauseListenerCalledEx = true;
     }
 
