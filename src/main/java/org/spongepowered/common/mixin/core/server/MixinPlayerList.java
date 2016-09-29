@@ -844,4 +844,14 @@ public abstract class MixinPlayerList implements IMixinPlayerList {
         SpongePlayerDataHandler.savePlayer(playerMP.getUniqueID());
     }
 
+    @Redirect(method = "updatePermissionLevel", at = @At(value = "INVOKE",
+            target = "net/minecraft/world/WorldServer.getWorldInfo ()Lnet/minecraft/world/storage/WorldInfo;"))
+    private WorldInfo onGetWorldInfo(WorldServer overworld, EntityPlayerMP player) {
+        // TODO: This applies only to singleplayer, on the server canSendCommands is called with the game profile
+        // We can't get the world from the game profile
+
+        // Check the world info of the current world instead of overworld world info
+        return player.worldObj.getWorldInfo();
+    }
+
 }
