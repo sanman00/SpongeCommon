@@ -27,12 +27,14 @@ package org.spongepowered.common.mixin.core.item.inventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetype;
 import org.spongepowered.api.item.inventory.InventoryProperty;
 import org.spongepowered.api.item.inventory.type.CarriedInventory;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -65,6 +67,7 @@ public abstract class MixinCustomInventory implements MinecraftInventoryAdapter,
     private Fabric<IInventory> inventory;
     private SlotCollection slots;
     private CustomLens lens;
+    private PluginContainer plugin;
 
     @Inject(method = "<init>*", at = @At("RETURN"), remap = false)
     private void onConstructed(InventoryArchetype archetype, Map<String, InventoryProperty> properties, Carrier carrier, Map<Class<? extends
@@ -72,6 +75,13 @@ public abstract class MixinCustomInventory implements MinecraftInventoryAdapter,
         this.inventory = MinecraftFabric.of(this);
         this.slots = new SlotCollection.Builder().add(inv.getSizeInventory()).build();
         this.lens = new CustomLens(this, slots, archetype, properties);
+        Optional<PluginContainer> pluginContainerOpt = Sponge.getPluginManager().fromInstance(plugin);
+        if (pluginContainerOpt.isPresent()) {
+            this.plugin = pluginContainerOpt.get();
+        }
+        else {
+            throw new IllegalArgumentException("Must pass a valid plugin instance");
+        }
     }
 
     @Override
@@ -102,4 +112,7 @@ public abstract class MixinCustomInventory implements MinecraftInventoryAdapter,
     public Optional<Carrier> getCarrier() {
         return Optional.ofNullable(this.carrier);
     }
+
+    @Override
+    public PluginContainer getPlugin() { return this.plugin; }
 }
