@@ -37,6 +37,9 @@ import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.ArmorEquipable;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.equipment.EquipmentType;
+import org.spongepowered.api.item.inventory.equipment.EquipmentTypeWorn;
+import org.spongepowered.api.item.inventory.equipment.EquipmentTypes;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
@@ -115,6 +118,63 @@ public abstract class MixinArmorEquipable extends MixinEntityLivingBase {
             this.setHeldItem((EnumHand) (Object) handType, net.minecraft.item.ItemStack.EMPTY);
         } else {
             this.setHeldItem((EnumHand) (Object) handType, ((net.minecraft.item.ItemStack) itemInHand.copy()));
+        }
+    }
+
+    public boolean equipable$canEquip(EquipmentType type) {
+        return type instanceof EquipmentTypeWorn || type == EquipmentTypes.EQUIPPED;
+    }
+
+    public boolean equipable$canEquip(EquipmentType type, ItemStack equipment) {
+        if (!equipable$canEquip(type)) {
+            return false;
+        }
+        return true;
+    }
+
+    public Optional<ItemStack> equipable$getEquipped(EquipmentType type) {
+        if (equipable$canEquip(type)) {
+            return Optional.empty();
+        }
+        if (type == EquipmentTypes.HEADWEAR) {
+            return equipable$getHelmet();
+        }
+        else if (type == EquipmentTypes.CHESTPLATE) {
+            return equipable$getChestplate();
+        }
+        else if (type == EquipmentTypes.LEGGINGS) {
+            return equipable$getLeggings();
+        }
+        else if (type == EquipmentTypes.BOOTS) {
+            return equipable$getBoots();
+        }
+        else {
+            return Optional.empty();
+        }
+    }
+
+    public boolean equipable$equip(EquipmentType type, ItemStack equipment) {
+        if (!equipable$canEquip(type, equipment)) {
+            return false;
+        }
+
+        try {
+            if (type == EquipmentTypes.HEADWEAR) {
+                equipable$setHelmet(equipment);
+            }
+            else if (type == EquipmentTypes.CHESTPLATE) {
+                equipable$setChestplate(equipment);
+            }
+            else if (type == EquipmentTypes.LEGGINGS) {
+                equipable$setLeggings(equipment);
+            }
+            else if (type == EquipmentTypes.BOOTS) {
+                equipable$setBoots(equipment);
+            }
+            return true;
+        }
+        catch (Exception e) {
+            return false;
         }
     }
 }
