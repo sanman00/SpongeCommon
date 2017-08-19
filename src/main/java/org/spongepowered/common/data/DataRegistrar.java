@@ -432,6 +432,9 @@ public class DataRegistrar {
         DataUtil.registerDataProcessorAndImpl(AreaEffectCloudData.class, SpongeAreaEffectData.class, ImmutableAreaEffectCloudData.class,
                 ImmutableSpongeAreaEffectCloudData.class, new AreaEffectCloudDataProcessor());
 
+        DataUtil.registerDualProcessor(DominantHandData.class, SpongeDominantHandData.class, ImmutableDominantHandData.class,
+                ImmutableSpongeDominantHandData.class, new DominantHandDataProcessor());
+
         // Item Processors
 
         DataUtil.registerDualProcessor(FireworkEffectData.class, SpongeFireworkEffectData.class,

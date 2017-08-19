@@ -461,6 +461,7 @@ public final class CommonModuleRegistry {
             .registerModule(StructureMode.class, new StructureModeRegistryModule())
             .registerModule(CraftingRecipe.class, SpongeCraftingRecipeRegistry.getInstance())
             .registerModule(RecordType.class, RecordTypeRegistryModule.getInstance())
+            .registerModule(HandPreference.class, HandPreferenceTypeRegistryModule.getInstance())
 
             // Miscellaneous Registries
             .registerModule(DungeonMobRegistryModule.getInstance())
